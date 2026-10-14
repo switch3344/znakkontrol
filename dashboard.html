@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Truly — Панель управления и проверка кодов</title>
+  <meta name="description" content="Личный кабинет Truly: массовая загрузка файлов, валидация кодов маркировки и статистика отгрузок.">
+  <link rel="stylesheet" href="css/styles.css">
+  <script>
+    (function() {
+      try {
+        const theme = localStorage.getItem('truly_theme') || localStorage.getItem('znakcontrol_theme');
+        if (theme === 'light') {
+          document.documentElement.setAttribute('data-theme', 'light');
+        } else {
+          document.documentElement.setAttribute('data-theme', 'dark');
+        }
+      } catch (e) {}
+    })();
+  </script>
+</head>
+<body class="dashboard-body">
+
+  <!-- ВЕРХНЯЯ ПАНЕЛЬ -->
+  <header class="dashboard-header">
+    <div class="dashboard-topbar">
+      <a href="index.html" class="logo" aria-label="Вернуться на главную">
+        <span class="logo-mark" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="trulyLogoGradDash" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#38BDF8" />
+                <stop offset="100%" stop-color="#2563EB" />
+              </linearGradient>
+            </defs>
+            <path d="M4 8V4H8" stroke="url(#trulyLogoGradDash)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M16 4H20V8" stroke="url(#trulyLogoGradDash)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M20 16V20H16" stroke="url(#trulyLogoGradDash)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M8 20H4V16" stroke="url(#trulyLogoGradDash)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M7.5 9H16.5M12 9V17" stroke="url(#trulyLogoGradDash)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </span>
+        <span class="logo-text">Truly</span>
+      </a>
+
+      <div class="dashboard-user-area">
+        <!-- Переключатель языка (RU / EN) -->
+        <button type="button" class="lang-toggle js-lang-toggle" id="langToggleDashboard" aria-label="Переключить язык" title="RU / EN">
+          <span class="lang-text">EN</span>
+        </button>
+
+        <!-- Переключатель темы (Светлая / Тёмная) -->
+        <button type="button" class="theme-toggle js-theme-toggle" id="themeToggleDashboard" aria-label="Переключить тему оформления" title="Светлая / тёмная тема">
+          <svg class="theme-icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <svg class="theme-icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+
+        <span class="tariff-pill">Тариф Pro</span>
+        <div class="avatar-circle" title="Продавец">ИП</div>
+        <a href="index.html" class="btn btn-secondary btn-sm" aria-label="Выйти из аккаунта">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+          <span>Выйти</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ОСНОВНАЯ ОБЛАСТЬ ДАШБОРДА -->
+  <main class="container dashboard-main">
+    
+    <!-- 1. ТРИ КАРТОЧКИ СТАТИСТИКИ -->
+    <div class="dashboard-stats-grid">
+      <!-- Использовано проверок -->
+      <div class="card stat-card">
+        <div class="stat-label">
+          <span>Использовано проверок в этом месяце</span>
+        </div>
+        <div class="stat-value num-tabular" id="statUsedCount">4 / 10 000</div>
+        <div class="stat-desc">Лимит тарифа Pro</div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" id="statProgressFill" style="width: 4%;"></div>
+        </div>
+      </div>
+
+      <!-- Всё подходит -->
+      <div class="card stat-card">
+        <div class="stat-label">
+          <span class="status-badge status-badge-pass" style="padding: 4px 10px; font-size: 12px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <span>Всё подходит</span>
+          </span>
+        </div>
+        <div class="stat-value num-tabular" id="statPassCount">2</div>
+        <div class="stat-desc">Код валиден, введён в оборот и принадлежит продавцу.</div>
+      </div>
+
+      <!-- Надо проверить / Не допустимо -->
+      <div class="card stat-card">
+        <div class="stat-label">
+          <span class="status-badge status-badge-warn" style="padding: 4px 10px; font-size: 12px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            <span>Надо проверить</span>
+          </span>
+        </div>
+        <div class="stat-value num-tabular" id="statWarnFailCount">2</div>
+        <div class="stat-desc">Требует внимания или выведен из оборота</div>
+      </div>
+    </div>
+
+    <!-- 2. БЛОК ЗАГРУЗКИ И ПРОВЕРКИ -->
+    <section class="card upload-hub" aria-labelledby="uploadHeading">
+      <h2 id="uploadHeading" class="upload-heading">
+        Быстрая проверка партии
+      </h2>
+
+      <div class="upload-grid">
+        <!-- Зона Drag & Drop -->
+        <div class="drop-zone js-drop-zone" tabindex="0" role="button" aria-label="Загрузить файл этикеток или реестра">
+          <div class="drop-zone-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="12" x2="12" y2="15"></line>
+            </svg>
+          </div>
+          <div class="drop-zone-title">Перетащите файл или нажмите для выбора</div>
+          <div class="drop-zone-subtitle">Поддерживаются фото этикеток, XLSX, XLS, CSV</div>
+          <input type="file" class="js-file-input" accept=".xlsx,.xls,.csv,image/png,image/jpeg" style="display: none;">
+        </div>
+
+        <!-- Ручной ввод кода DataMatrix -->
+        <div class="manual-input-box">
+          <label class="form-label" for="manualCodeInput">Или введите DataMatrix / GTIN вручную</label>
+          <div class="manual-input-row">
+            <input type="text" id="manualCodeInput" class="form-input js-manual-code" placeholder="010467003301005121..." autocomplete="off">
+            <button type="button" class="btn btn-primary js-check-btn">
+              Проверить
+            </button>
+          </div>
+          <div class="manual-hint">
+            Поддерживаются коды DataMatrix с разделителями GS1 и префиксом (01)
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. ТАБЛИЦА РЕЗУЛЬТАТОВ И ФИЛЬТРЫ -->
+    <section class="card results-section" aria-labelledby="resultsHeading">
+      <div class="results-header">
+        <div>
+          <h2 id="resultsHeading" class="results-heading">
+            История последних проверок
+          </h2>
+          <div class="results-subheading">
+            Данные сверяются со статусом в ГИС МТ в реальном времени
+          </div>
+        </div>
+
+        <!-- Фильтры-чипы -->
+        <div class="filter-chips" role="group" aria-label="Фильтрация по статусам">
+          <button type="button" class="chip-btn is-active js-filter-chip" data-filter="all">Все</button>
+          <button type="button" class="chip-btn js-filter-chip" data-filter="pass">Всё подходит</button>
+          <button type="button" class="chip-btn js-filter-chip" data-filter="warn">Надо проверить</button>
+          <button type="button" class="chip-btn js-filter-chip" data-filter="fail">Не допустимо</button>
+        </div>
+      </div>
+
+      <!-- Таблица -->
+      <div class="table-wrapper">
+        <table class="results-table">
+          <thead>
+            <tr>
+              <th scope="col" style="width: 34%;">Код маркировки</th>
+              <th scope="col" style="width: 36%;">Товарная позиция</th>
+              <th scope="col" style="width: 20%;">Статус валидации</th>
+              <th scope="col" style="width: 10%;">Время</th>
+            </tr>
+          </thead>
+          <tbody class="js-results-body">
+            <!-- Заполняется через JS в main.js -->
+          </tbody>
+        </table>
+
+        <!-- Пустое состояние -->
+        <div class="empty-state js-empty-state" style="display: none; padding: 40px; text-align: center;">
+          <div class="drop-zone-icon" style="margin-inline: auto;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </div>
+          <div style="font-weight: 500; margin-top: 10px;">Нет данных по выбранному фильтру</div>
+          <div style="font-size: 13px; color: var(--navy-66); margin-top: 4px;">Загрузите файл или проверьте код, чтобы увидеть результаты</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+  <script src="js/main.js"></script>
+</body>
+</html>
